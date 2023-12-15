@@ -3,6 +3,7 @@ package com.falaagro.fala_agro_back.controllers;
 import com.falaagro.fala_agro_back.entities.User;
 import com.falaagro.fala_agro_back.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class UserController {
     public UserService userService;
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok().body(userService.createUser(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
 
     @GetMapping
