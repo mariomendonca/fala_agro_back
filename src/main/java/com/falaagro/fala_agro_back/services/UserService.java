@@ -1,8 +1,11 @@
 package com.falaagro.fala_agro_back.services;
 
+import com.falaagro.fala_agro_back.DTOs.LoginRequest;
 import com.falaagro.fala_agro_back.entities.User;
+import com.falaagro.fala_agro_back.errors.LoginInvalidException;
 import com.falaagro.fala_agro_back.errors.UserAlreadyExistsException;
 import com.falaagro.fala_agro_back.repositories.UserRepository;
+import com.falaagro.fala_agro_back.security.PasswordCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,18 @@ public class UserService {
             throw new UserAlreadyExistsException("username or email is already being used");
         }
 
+
+        user.setPassword(PasswordCrypt.encryption(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    public User login(LoginRequest loginRequest) {
+        Optional<User> user = userRepository.findByUsernameOrEmail(loginRequest.getEmailOrUsername(), loginRequest.getEmailOrUsername());
+
+        if (user.isEmpty() || !PasswordCrypt.verifier(loginRequest.getPassword(), user.get().getPassword())) {
+            throw new LoginInvalidException("Invalid credentials");
+        }
+
+        return user.get();
     }
 }
