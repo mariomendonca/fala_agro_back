@@ -1,6 +1,7 @@
 package com.falaagro.fala_agro_back.services;
 
 import com.falaagro.fala_agro_back.DTOs.LoginRequest;
+import com.falaagro.fala_agro_back.DTOs.LoginResponse;
 import com.falaagro.fala_agro_back.entities.User;
 import com.falaagro.fala_agro_back.errors.LoginInvalidException;
 import com.falaagro.fala_agro_back.errors.UserAlreadyExistsException;
@@ -33,13 +34,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         Optional<User> user = userRepository.findByUsernameOrEmail(loginRequest.getEmailOrUsername(), loginRequest.getEmailOrUsername());
 
         if (user.isEmpty() || !PasswordCrypt.verifier(loginRequest.getPassword(), user.get().getPassword())) {
             throw new LoginInvalidException("Invalid credentials");
         }
 
-        return user.get();
+        return new LoginResponse(user.get(), "token");
     }
 }
